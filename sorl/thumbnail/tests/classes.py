@@ -71,14 +71,14 @@ class DjangoThumbnailTest(BaseTest):
     def testFilenameGeneration(self):
         basename = RELATIVE_PIC_NAME.replace('.', '_')
         # Basic filename
-        thumb = DjangoThumbnail(relative_source=RELATIVE_PIC_NAME,
+        thumb = DjangoThumbnail(path_or_filefield=RELATIVE_PIC_NAME,
                                 requested_size=(240, 120))
         expected = os.path.join(settings.MEDIA_ROOT, basename)
         expected += '_240x120_q85.jpg'
         self.verify_thumbnail((160, 120), thumb, expected_filename=expected)
 
         # Changed quality and cropped
-        thumb = DjangoThumbnail(relative_source=RELATIVE_PIC_NAME,
+        thumb = DjangoThumbnail(path_or_filefield=RELATIVE_PIC_NAME,
                                 requested_size=(240, 120), opts=['crop'],
                                 quality=95)
         expected = os.path.join(settings.MEDIA_ROOT, basename)
@@ -86,7 +86,7 @@ class DjangoThumbnailTest(BaseTest):
         self.verify_thumbnail((240, 120), thumb, expected_filename=expected)
 
         # All options on
-        thumb = DjangoThumbnail(relative_source=RELATIVE_PIC_NAME,
+        thumb = DjangoThumbnail(path_or_filefield=RELATIVE_PIC_NAME,
                                 requested_size=(240, 120), opts=VALID_OPTIONS)
         expected = os.path.join(settings.MEDIA_ROOT, basename)
         expected += '_240x120_bw_autocrop_crop_upscale_detail_sharpen_q85.jpg'
@@ -95,14 +95,14 @@ class DjangoThumbnailTest(BaseTest):
         # Different basedir
         basedir = 'sorl-thumbnail-test-basedir'
         self.change_settings.change({'BASEDIR': basedir})
-        thumb = DjangoThumbnail(relative_source=self.pic_subdir,
+        thumb = DjangoThumbnail(path_or_filefield=self.pic_subdir,
                                 requested_size=(240, 120))
         expected = os.path.join(basedir, self.sub_dir, basename)
         expected += '_240x120_q85.jpg'
         self.verify_thumbnail((160, 120), thumb, expected_filename=expected)
         # Different subdir
         self.change_settings.change({'BASEDIR': '', 'SUBDIR': 'subdir'})
-        thumb = DjangoThumbnail(relative_source=self.pic_subdir,
+        thumb = DjangoThumbnail(path_or_filefield=self.pic_subdir,
                                 requested_size=(240, 120))
         expected = os.path.join(settings.MEDIA_ROOT,
                                 os.path.basename(self.sub_dir), 'subdir',
@@ -111,7 +111,7 @@ class DjangoThumbnailTest(BaseTest):
         self.verify_thumbnail((160, 120), thumb, expected_filename=expected)
         # Different prefix
         self.change_settings.change({'SUBDIR': '', 'PREFIX': 'prefix-'})
-        thumb = DjangoThumbnail(relative_source=self.pic_subdir,
+        thumb = DjangoThumbnail(path_or_filefield=self.pic_subdir,
                                 requested_size=(240, 120))
         expected = os.path.join(self.sub_dir, 'prefix-'+basename)
         expected += '_240x120_q85.jpg'
@@ -120,14 +120,14 @@ class DjangoThumbnailTest(BaseTest):
     def testAlternateExtension(self):
         basename = RELATIVE_PIC_NAME.replace('.', '_')
         # Control JPG
-        thumb = DjangoThumbnail(relative_source=RELATIVE_PIC_NAME,
+        thumb = DjangoThumbnail(path_or_filefield=RELATIVE_PIC_NAME,
                                 requested_size=(240, 120))
         expected = os.path.join(settings.MEDIA_ROOT, basename)
         expected += '_240x120_q85.jpg'
         expected_jpg = expected
         self.verify_thumbnail((160, 120), thumb, expected_filename=expected)
         # Test PNG
-        thumb = DjangoThumbnail(relative_source=RELATIVE_PIC_NAME,
+        thumb = DjangoThumbnail(path_or_filefield=RELATIVE_PIC_NAME,
                                 requested_size=(240, 120), extension='png')
         expected = os.path.join(settings.MEDIA_ROOT, basename)
         expected += '_240x120_q85.png'
