@@ -34,6 +34,7 @@ class DjangoThumbnail(Thumbnail):
             url = path_or_filefield.storage.url
         except AttributeError:
             source = self._absolute_path(path_or_filefield)
+            relative_source = force_unicode(relative_source)
             url = settings.MEDIA_URL
 
         quality = get_thumbnail_setting('QUALITY', quality)
@@ -52,7 +53,7 @@ class DjangoThumbnail(Thumbnail):
         # destination filename
         if relative_dest is None:
             self.relative_dest = \
-               self._get_relative_thumbnail(relative_source, basedir=basedir,
+               self._get_relative_thumbnail(path_or_filefield, basedir=basedir,
                                             subdir=subdir, prefix=prefix,
                                             extension=extension)
         else:
