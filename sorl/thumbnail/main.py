@@ -24,12 +24,18 @@ def get_thumbnail_setting(setting, override=None):
 
 
 class DjangoThumbnail(Thumbnail):
-    def __init__(self, image, requested_size, opts=None,
+    def __init__(self, requested_size, opts=None, imagefield=None,
+                 relative_source=None,
                  quality=None, basedir=None, subdir=None, prefix=None,
                  relative_dest=None, processors=None, extension=None):
-        relative_source = force_unicode(relative_source)
         # Set the absolute filename for the source file
-        source = image.path
+        if imagefield:
+            source = imagefield.path
+            relative_source = imagefield.name
+            url = self.storage.url
+        else:
+            source = self._absolute_path(relative_source)
+            url = settings.MEDIA_URL
 
         quality = get_thumbnail_setting('QUALITY', quality)
         convert_path = get_thumbnail_setting('CONVERT')
@@ -47,7 +53,7 @@ class DjangoThumbnail(Thumbnail):
         # destination filename
         if relative_dest is None:
             self.relative_dest = \
-               self._get_relative_thumbnail(image.name, basedir=basedir,
+               self._get_relative_thumbnail(relative_source, basedir=basedir,
                                             subdir=subdir, prefix=prefix,
                                             extension=extension)
         else:
@@ -60,7 +66,7 @@ class DjangoThumbnail(Thumbnail):
         # Set the relative & absolute url to the thumbnail
         self.relative_url = \
             iri_to_uri('/'.join(self.relative_dest.split(os.sep)))
-        self.absolute_url = '%s%s' % (image.storage.base_url, self.relative_url)
+        self.absolute_url = '%s%s' % (url, self.relative_url)
 
     def _get_relative_thumbnail(self, relative_source,
                                 basedir=None, subdir=None, prefix=None,
@@ -84,9 +90,8 @@ class DjangoThumbnail(Thumbnail):
                                                   extension)
         return os.path.join(basedir, path, subdir, thumbnail_filename)
 
-    def _absolute_path(self, image, relative_source):
-        absolute_filename = os.path.join(image.storage.location,
-                                         relative_source)
+    def _absolute_path(self, filename):
+        absolute_filename = os.path.join(settings.MEDIA_ROOT, filename)
         return absolute_filename.encode(settings.FILE_CHARSET)
 
     def __unicode__(self):
