@@ -24,17 +24,16 @@ def get_thumbnail_setting(setting, override=None):
 
 
 class DjangoThumbnail(Thumbnail):
-    def __init__(self, requested_size, opts=None, imagefield=None,
-                 relative_source=None,
+    def __init__(self, path_or_filefield, requested_size, opts=None,
                  quality=None, basedir=None, subdir=None, prefix=None,
                  relative_dest=None, processors=None, extension=None):
         # Set the absolute filename for the source file
-        if imagefield:
-            source = imagefield.path
-            relative_source = imagefield.name
-            url = self.storage.url
-        else:
-            source = self._absolute_path(relative_source)
+        try:
+            source = path_or_filefield.path
+            relative_source = path_or_filefield.name
+            url = path_or_filefield.storage.url
+        except AttributeError:
+            source = self._absolute_path(path_or_filefield)
             url = settings.MEDIA_URL
 
         quality = get_thumbnail_setting('QUALITY', quality)
