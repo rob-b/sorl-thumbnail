@@ -31,7 +31,7 @@ class DjangoThumbnail(Thumbnail):
         try:
             source = path_or_filefield.path
             relative_source = path_or_filefield.name
-            url = path_or_filefield.storage.url
+            url = path_or_filefield.storage.base_url
         except AttributeError:
             source = self._absolute_path(path_or_filefield)
             relative_source = force_unicode(path_or_filefield)
