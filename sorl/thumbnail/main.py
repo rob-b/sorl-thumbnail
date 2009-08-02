@@ -32,10 +32,12 @@ class DjangoThumbnail(Thumbnail):
             source = path_or_filefield.path
             relative_source = path_or_filefield.name
             url = path_or_filefield.storage.base_url
+            self.root_path = path_or_filefield.storage.location
         except AttributeError:
             source = self._absolute_path(path_or_filefield)
             relative_source = force_unicode(path_or_filefield)
             url = settings.MEDIA_URL
+            self.root_path = settings.MEDIA_ROOT
 
         quality = get_thumbnail_setting('QUALITY', quality)
         convert_path = get_thumbnail_setting('CONVERT')
@@ -91,7 +93,7 @@ class DjangoThumbnail(Thumbnail):
         return os.path.join(basedir, path, subdir, thumbnail_filename)
 
     def _absolute_path(self, filename):
-        absolute_filename = os.path.join(settings.MEDIA_ROOT, filename)
+        absolute_filename = os.path.join(self.root_path, filename)
         return absolute_filename.encode(settings.FILE_CHARSET)
 
     def __unicode__(self):
