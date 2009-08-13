@@ -34,10 +34,10 @@ class DjangoThumbnail(Thumbnail):
             url = path_or_filefield.storage.base_url
             self.root_path = path_or_filefield.storage.location
         except AttributeError:
+            self.root_path = settings.MEDIA_ROOT
             source = self._absolute_path(path_or_filefield)
             relative_source = force_unicode(path_or_filefield)
             url = settings.MEDIA_URL
-            self.root_path = settings.MEDIA_ROOT
 
         quality = get_thumbnail_setting('QUALITY', quality)
         convert_path = get_thumbnail_setting('CONVERT')
